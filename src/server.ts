@@ -25,6 +25,10 @@ const transporter = nodemailer.createTransport({
 
 // Define a Joi schema for the incoming email data
 const emailSchema = Joi.object({
+  from: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required(),
+  fromName: Joi.string().required(),
   to: Joi.string()
     .email({ tlds: { allow: false } })
     .required()
@@ -55,10 +59,10 @@ app.post(
       return;
     }
 
-    const { to, subject, text, html } = value;
+    const { to, subject, text, html, from, fromName } = value;
 
     const mailOptions = {
-      from: `"Your Name" <${process.env.SMTP_USER}>`, // Using env variable for sender email
+      from: `"${fromName}" <${from}>`, // Using env variable for sender email
       to,
       subject,
       text,
